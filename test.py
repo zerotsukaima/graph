@@ -1,119 +1,95 @@
-def add_edge(mat, a, b):
-    mat[a][b] = 1
+n = int(input('Введите число вершин в графе: '))
+k = int(input('Введите число ребер в графе: '))
 
-def loops():
-    global G
-    for i in range(len(G)):
-        for j in range(len(G)):
-            if i == j and G[i][j] == 1:
-                print('В графе есть петли ')
-                return G
-    print('В графе нет петель ')
+graph = [[int(x) for x in input().split()] for i in range(n)]
 
-def verZero():
-    global G
-    global K
-    for i in range(K):
-        countZeros = 0
-        for j in range(K):
-            if G[i][j] == 0:
-                countZeros += 1
-        if countZeros == len(G):
-            print('В графе есть вершины, не смежные с другими')
-            break
-        if i == len(G) - 1:
-            print('В графе нет вершин, не смежных с другими')
+graph_matrix = []
+loop = []
+level = []
+counter = 0
+counter_0 = 0
+counter_not_0 = 0
+maxx = 0
 
-def verToVer():
-    global G
-    global K
-    for i in range(K):
-        for j in range(K):
-            if G[i][j] != 0:
-                print(i, j)
+for i in range(n):
+    graph_matrix.append([])
+    for j in range(n):
+        graph_matrix[i].append(0)
 
-def verAll():
-    global G
-    global K
-    for i in range(K):
-        countOnes = 0
-        for j in range(K):
-            if G[i][j] == 1:
-                countOnes += 1
-        if countOnes == len(G):
-            print('В графе есть смежные со всеми вершины')
-            break
-        if i == len(G) - 1:
-            print('В графе нет смежных со всеми вершин')
+def node():
+    for i in graph:
+        if len(i) == 2:
+            a, b = i[0], i[1]
+            matrix(a, b)
+            matrix(b, a)
 
-def degreeGraph():
-    global G
-    global K
-    for i in range(K):
-        countDegree = 0
-        for j in range(K):
-            if G[i][j] == 1:
-                countDegree += 1
-        print(i, countDegree)
+def matrix(a, b):
+    for i in range(n):
+        if i == a:
+            for j in range(n):
+                if j == b:
+                    graph_matrix[i][j] = 1
+node()
 
-def degreeOne():
-    global G
-    global K
-    for i in range(K):
-        countDegree = 0
-        for j in range(K):
-            if G[i][j] == 1:
-                countDegree += 1
-        if countDegree == 1:
-            print(i)
+print('\nМатрица смежности')
+for i in range(n):
+    print('')
+    for j in range(n):
+        print(graph_matrix[i][j], end=' ')
+print('\n')
 
-def maxDegree():
-    global G
-    global K
-    global Max
-    for i in range(K):
-        countDegree = 0
-        for j in range(K):
-            if G[i][j] == 1:
-                countDegree += 1
-        if countDegree > Max:
-            Max = countDegree
-    print(Max)
+for i in range(n):
+    print('Вершина ' + str(i) + ' смежна с вершинами: ', end=' ')
+    for j in range(n):
+        if i == j and graph_matrix[i][j] == 1:
+            loop.append(i)
+        if graph_matrix[i][j] == 1:
+            print(j, end=' ')
+    print('')
 
-M = int(input('Введите число ребер: '))
-K = int(input('Введите число вершин: '))
-print('Введите связи между вершинами графа:')
-mat = []
-Max = 0
+for i in range(n):
+    for j in range(n):
+        if graph_matrix[i][j] == 1:
+            counter += 1
+            if counter == n:
+                print('\nВершина смежная со всеми вершинам:', i)
+                print('')
+        if graph_matrix[i][j] == 0:
+            counter_0 += 1
+            if counter_0 == n:
+                print('\nВершина не смежная с другими:', i)
+                print('')
+            if counter_0 < n:
+                counter_not_0 += 1
+    counter_0 = 0
+    counter = 0
 
-for i in range(K):
-    mat.append([])
-    for j in range(K):
-        mat[i].append(0)
-for i in range(M):
-    a, b = input().split()
-    a = int(a)
-    b = int(b)
-    add_edge(mat, a, b)
-    add_edge(mat, b, a)
+for i in range(n):
+    print('Степень вершины ' + str(i) + ' - ', end='')
+    for j in range(n):
+        if graph_matrix[i][j] == 1:
+            counter += 1
+    print(counter)
+    if counter == 1:
+        level.append(i)
+    if counter > maxx:
+        maxx = counter
+    counter = 0
 
-G = mat
-for i in range(len(G)):
-    print("")
-    for j in range(len(G)):
-        print(G[i][j], end=" ")
+if counter_not_0 == n:
+    print('\nВ графе нет вершин не смежных со другими.')
 
-print('\nа) есть ли в графе петли? ')
-loops()
-print('\nб) есть ли в графе вершины не смежные с другими?')
-verZero()
-print('\nв) вершины и смежные им вершины:')
-verToVer()
-print('\nг) есть ли в графе вершины смежные со всеми другими вершинами?')
-verAll()
-print('\nд) вершины и ее степень:')
-degreeGraph()
-print('\nе) номера вершин со степенью 1:')
-degreeOne()
-print('\nж) максимальная степень графа:')
-maxDegree()
+if len(loop) > 0:
+    print('\nВершины с петлями:', *loop)
+else:
+    print('\nВ графе нет врешин с петлями.')
+
+if maxx < n:
+    print('\nВ графе нет вершин смежных со всеми вершинами.')
+
+if len(level) > 0:
+    print('\nВершины со степенью 1:', *level)
+else:
+    print('\nВ графе нет врешин со степенью 1.')
+
+print('\nСтепень графа:', maxx)
